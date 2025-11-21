@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desert Sands Robotics Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for the Arabian Theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Reem+Kufi:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Theme Variables */
+        :root {
+            --color-gold: #FFD700;
+            --color-gold-dim: #C5A000;
+            --color-night: #0F172A;
+            --color-sand: #F4A460;
+            --color-jewel-red: #991b1b;
+            --color-jewel-green: #065f46;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1e1b4b, #0f172a, #000000);
+            color: var(--color-gold);
+            font-family: 'Reem Kufi', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Starry Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        h1, h2, h3, .decorative-font {
+            font-family: 'Cinzel Decorative', cursive;
+        }
+
+        /* Glassmorphism Cards with Gold Borders */
+        .arabian-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--color-gold-dim);
+            border-radius: 1rem;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .arabian-card::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.8rem;
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-gold-dim); 
+            border-radius: 4px;
+        }
+
+        /* Button Styles */
+        .btn-gold {
+            background: linear-gradient(45deg, #C5A000, #FFD700, #C5A000);
+            color: #000;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px var(--color-gold);
+        }
+        .btn-gold:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #555;
+        }
+
+        .btn-stop {
+            background: linear-gradient(45deg, #7f1d1d, #991b1b, #7f1d1d);
+            color: white;
+            border: 1px solid #ff9999;
+        }
+        .btn-stop:hover {
+            box-shadow: 0 0 15px red;
+        }
+
+        .btn-lap {
+            background: linear-gradient(45deg, #064e3b, #065f46, #064e3b);
+            color: white;
+            border: 1px solid #99f6e4;
+        }
+
+        /* Neon Text Effect */
+        .neon-text {
+            text-shadow: 0 0 5px var(--color-gold), 0 0 10px var(--color-gold-dim);
+        }
+        
+        .timer-display {
+            font-feature-settings: "tnum";
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Interactive Table Cells */
+        .clickable-cell {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .clickable-cell:hover {
+            background-color: rgba(255, 215, 0, 0.1);
+            text-shadow: 0 0 8px #4ade80;
+        }
+        .clickable-cell::after {
+            content: '👁️ View';
+            position: absolute;
+            top: -10px;
+            right: 0;
+            font-size: 0.6rem;
+            background: var(--color-gold-dim);
+            color: black;
+            padding: 2px 4px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .clickable-cell:hover::after {
+            opacity: 1;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-content {
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="stars"></div>
+
+    <!-- Header -->
+    <header class="text-center mb-8 relative z-10">
+        <h1 class="text-4xl md:text-6xl text-yellow-400 mb-2 drop-shadow-lg neon-text">Star Trail</h1>
+        <p class="text-orange-200 text-lg tracking-widest uppercase">Line Follower Robotics Contest</p>
+    </header>
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+        
+        <!-- LEFT: Active Run Controls -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Input & Timer Card -->
+            <div class="arabian-card p-6 md:p-8 text-center">
+                
+                <!-- Team Input -->
+                <div class="mb-6">
+                    <label class="block text-orange-200 text-sm mb-2 uppercase tracking-wide">Team Name</label>
+                    <input type="text" id="teamNameInput" placeholder="Enter Team Name..." 
+                        class="w-full bg-slate-900 border-2 border-yellow-600 text-yellow-100 text-xl p-3 rounded focus:outline-none focus:border-yellow-400 focus:shadow-[0_0_10px_#ffd700] text-center placeholder-slate-600 transition-all">
+                </div>
+
+                <!-- Timer Display -->
+                <div class="mb-8 relative">
+                    <div class="text-6xl md:text-7xl font-bold timer-display text-white tracking-wider" id="mainTimer">00:00:00</div>
+                    <div class="text-sm text-orange-300 mt-1">MM : SS : MS</div>
+                </div>
+
+                <!-- Controls -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <button onclick="startTimer()" id="startBtn" class="btn-gold py-4 rounded text-lg decorative-font col-span-2">
+                        Start Run
+                    </button>
+                    
+                    <button onclick="recordLap()" id="lapBtn" disabled class="btn-lap py-3 rounded font-bold uppercase tracking-wide opacity-50 cursor-not-allowed transition-all">
+                        Mark Lap
+                    </button>
+                    
+                    <button onclick="stopTimer()" id="stopBtn" disabled class="btn-stop py-3 rounded font-bold uppercase tracking-wide opacity-50 cursor-not-allowed transition-all">
+                        Stop
+                    </button>
+                </div>
+
+                <button onclick="resetUI()" id="resetBtn" class="hidden w-full border border-yellow-600 text-yellow-500 py-2 rounded hover:bg-yellow-900/30 transition-colors">
+                    New Run
+                </button>
+
+                <!-- Status Message -->
+                <div id="statusMsg" class="h-6 mt-2 text-sm text-yellow-200 font-light"></div>
+            </div>
+
+            <!-- Current Laps List -->
+            <div class="arabian-card p-6 flex-grow">
+                <h3 class="text-2xl text-center text-orange-200 mb-4 border-b border-yellow-800 pb-2">Current Run Laps</h3>
+                <div class="overflow-y-auto max-h-64 pr-2" id="currentLapsContainer">
+                    <p class="text-slate-500 text-center italic mt-10">No laps recorded yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Leaderboard -->
+        <div class="lg:col-span-7">
+            <div class="arabian-card h-full p-6">
+                <!-- Leaderboard Header with CSV Button -->
+                <div class="flex flex-wrap justify-between items-end mb-6 border-b-2 border-yellow-700 pb-4 gap-2">
+                    <div>
+                        <h2 class="text-3xl text-yellow-400 neon-text">Leaderboard</h2>
+                        <span class="text-xs text-orange-300 italic">Sorted by Total Time</span>
+                    </div>
+                    <button onclick="exportToCSV()" class="flex items-center gap-2 bg-yellow-900/40 hover:bg-yellow-800 text-yellow-300 border border-yellow-600 px-3 py-1.5 rounded text-sm transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Export CSV
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-orange-200 border-b border-yellow-800">
+                                <th class="p-3 text-center">Rank</th>
+                                <th class="p-3">Team Name</th>
+                                <th class="p-3 text-right">Laps</th>
+                                <th class="p-3 text-right">Best Lap</th>
+                                <th class="p-3 text-right">Total Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                            <!-- Rows will be injected here -->
+                            <tr>
+                                <td colspan="5" class="text-center p-10 text-slate-500 italic">
+                                    The sands are empty. Start the first run.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-12 text-yellow-800 text-sm relative z-10 pb-4 flex justify-center gap-4">
+        <span>&copy; Royal Engineers of the Palace</span>
+        <span class="text-yellow-900">|</span>
+        <button onclick="clearData()" class="text-red-900 hover:text-red-500 transition-colors underline">Clear Leaderboard</button>
+    </footer>
+
+    <!-- Details Modal -->
+    <div id="lapDetailsModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="arabian-card modal-content w-full max-w-md p-6 mx-4 shadow-2xl" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-start mb-4 border-b border-yellow-800 pb-2">
+                <h3 class="text-2xl text-yellow-400 decorative-font" id="modalTeamName">Team Name</h3>
+                <button onclick="closeModal()" class="text-orange-300 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div class="mb-4 flex justify-between text-sm text-slate-400">
+                <span>Total Time: <span id="modalTotalTime" class="text-white font-mono"></span></span>
+                <span>Best Lap: <span id="modalBestLap" class="text-emerald-400 font-mono"></span></span>
+            </div>
+
+            <div class="bg-slate-900/50 rounded border border-yellow-900/50 max-h-64 overflow-y-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-yellow-900/20 text-orange-300">
+                        <tr>
+                            <th class="p-2 text-left">Lap #</th>
+                            <th class="p-2 text-right">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalLapBody">
+                        <!-- Lap Details Here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button onclick="closeModal()" class="btn-gold px-6 py-2 rounded text-sm">Close Scroll</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        // --- State Management ---
+        let timerInterval = null;
+        let startTime = 0;
+        let elapsedTime = 0;
+        let isRunning = false;
+        let currentLaps = [];
+        let leaderboardData = [];
+        const MAX_TIME_MS = 10 * 60 * 1000; // 10 minutes in ms
+
+        // --- DOM Elements ---
+        const els = {
+            teamInput: document.getElementById('teamNameInput'),
+            timerDisplay: document.getElementById('mainTimer'),
+            startBtn: document.getElementById('startBtn'),
+            lapBtn: document.getElementById('lapBtn'),
+            stopBtn: document.getElementById('stopBtn'),
+            resetBtn: document.getElementById('resetBtn'),
+            statusMsg: document.getElementById('statusMsg'),
+            lapsContainer: document.getElementById('currentLapsContainer'),
+            leaderboardBody: document.getElementById('leaderboardBody'),
+            modal: document.getElementById('lapDetailsModal'),
+            modalTeamName: document.getElementById('modalTeamName'),
+            modalTotalTime: document.getElementById('modalTotalTime'),
+            modalBestLap: document.getElementById('modalBestLap'),
+            modalLapBody: document.getElementById('modalLapBody')
+        };
+
+        // --- Persistence ---
+        function loadData() {
+            const saved = localStorage.getItem('desertRoboticsLeaderboard');
+            if (saved) {
+                try {
+                    leaderboardData = JSON.parse(saved);
+                    sortLeaderboard(); // Ensure sorted just in case
+                    renderLeaderboard();
+                } catch (e) {
+                    console.error("Failed to load leaderboard data", e);
+                }
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('desertRoboticsLeaderboard', JSON.stringify(leaderboardData));
+        }
+
+        function clearData() {
+            if(confirm("Are you sure you want to erase all leaderboard history? This cannot be undone.")) {
+                localStorage.removeItem('desertRoboticsLeaderboard');
+                leaderboardData = [];
+                renderLeaderboard();
+            }
+        }
+
+        // Initialize
+        loadData();
+
+        // --- Formatting ---
+        function formatTime(ms) {
+            const minutes = Math.floor(ms / 60000);
+            const seconds = Math.floor((ms % 60000) / 1000);
+            const centiseconds = Math.floor((ms % 1000) / 10);
+
+            return `${pad(minutes)}:${pad(seconds)}:${pad(centiseconds)}`;
+        }
+
+        function pad(num) {
+            return num.toString().padStart(2, '0');
+        }
+
+        // --- CSV Export Logic ---
+        function exportToCSV() {
+            if (leaderboardData.length === 0) {
+                alert("The leaderboard is empty. No data to export!");
+                return;
+            }
+
+            // Define Headers
+            const headers = ["Rank", "Team Name", "Laps Completed", "Best Lap Time", "Total Time"];
+            
+            // Map Data to CSV Rows
+            const rows = leaderboardData.map((team, index) => {
+                return [
+                    index + 1,
+                    `"${team.name.replace(/"/g, '""')}"`, // Escape quotes in names
+                    team.laps.length,
+                    formatTime(team.bestLap),
+                    formatTime(team.totalTime)
+                ];
+            });
+
+            // Combine into CSV String
+            const csvContent = [
+                headers.join(","),
+                ...rows.map(row => row.join(","))
+            ].join("\n");
+
+            // Create Download Link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `desert_robotics_leaderboard_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Timer Logic ---
+        function startTimer() {
+            const teamName = els.teamInput.value.trim();
+            if (!teamName) {
+                showStatus("Please enter a team name first!", "text-red-400");
+                els.teamInput.focus();
+                return;
+            }
+
+            // Reset current run state
+            isRunning = true;
+            currentLaps = [];
+            elapsedTime = 0;
+            startTime = Date.now();
+            
+            // UI Updates
+            els.teamInput.disabled = true;
+            els.startBtn.classList.add('hidden');
+            els.resetBtn.classList.add('hidden');
+            
+            enableBtn(els.lapBtn);
+            enableBtn(els.stopBtn);
+            
+            renderCurrentLaps(); // Clear previous laps
+            showStatus("Run in progress...", "text-green-400");
+
+            // Start Loop
+            timerInterval = setInterval(() => {
+                const now = Date.now();
+                elapsedTime = now - startTime;
+
+                // Check for 10 minute limit
+                if (elapsedTime >= MAX_TIME_MS) {
+                    elapsedTime = MAX_TIME_MS;
+                    stopTimer(true); // true = auto stopped
+                }
+
+                els.timerDisplay.textContent = formatTime(elapsedTime);
+            }, 10); // Update every 10ms
+        }
+
+        function recordLap() {
+            if (!isRunning) return;
+            
+            const prevLapTotal = currentLaps.length > 0 
+                ? currentLaps.reduce((a, b) => a + b, 0) 
+                : 0;
+            
+            const lapDuration = elapsedTime - prevLapTotal;
+            
+            currentLaps.push(lapDuration);
+            renderCurrentLaps();
+            
+            // Visual feedback on timer
+            els.timerDisplay.style.color = '#4ade80'; // Green flash
+            setTimeout(() => els.timerDisplay.style.color = '', 200);
+        }
+
+        function stopTimer(autoStop = false) {
+            if (!isRunning) return;
+
+            clearInterval(timerInterval);
+            isRunning = false;
+
+            // Disable controls
+            disableBtn(els.lapBtn);
+            disableBtn(els.stopBtn);
+            els.resetBtn.classList.remove('hidden');
+
+            // Final Logic
+            const teamName = els.teamInput.value.trim();
+            
+            const runData = {
+                id: Date.now(),
+                name: teamName,
+                totalTime: elapsedTime,
+                laps: [...currentLaps], // Copy array
+                // Calculate best lap (if no laps recorded, total time is the lap)
+                bestLap: currentLaps.length > 0 ? Math.min(...currentLaps) : elapsedTime
+            };
+
+            addToLeaderboard(runData);
+            
+            if (autoStop) {
+                showStatus("Time Limit Reached (10m)!", "text-red-400");
+            } else {
+                showStatus("Run Completed.", "text-yellow-400");
+            }
+        }
+
+        function resetUI() {
+            els.teamInput.value = "";
+            els.teamInput.disabled = false;
+            els.timerDisplay.textContent = "00:00:00";
+            els.statusMsg.textContent = "";
+            
+            els.startBtn.classList.remove('hidden');
+            els.resetBtn.classList.add('hidden');
+            
+            currentLaps = [];
+            renderCurrentLaps();
+        }
+
+        // --- Leaderboard Logic ---
+        function addToLeaderboard(run) {
+            leaderboardData.push(run);
+            sortLeaderboard();
+            saveData(); // Save to LocalStorage
+            renderLeaderboard();
+        }
+
+        function sortLeaderboard() {
+            leaderboardData.sort((a, b) => {
+                // Primary: Least Total Time
+                if (a.totalTime !== b.totalTime) {
+                    return a.totalTime - b.totalTime;
+                }
+                // Secondary: Least Best Lap (Tie Breaker)
+                return a.bestLap - b.bestLap;
+            });
+        }
+
+        function renderLeaderboard() {
+            els.leaderboardBody.innerHTML = '';
+
+            if (leaderboardData.length === 0) {
+                els.leaderboardBody.innerHTML = `<tr><td colspan="5" class="text-center p-10 text-slate-500 italic">The sands are empty. Start the first run.</td></tr>`;
+                return;
+            }
+
+            leaderboardData.forEach((team, index) => {
+                const rank = index + 1;
+                let rankClass = "text-slate-300";
+                let rowBg = "hover:bg-white/5";
+                let icon = "";
+
+                // Styling top 3
+                if (rank === 1) {
+                    rankClass = "text-yellow-400 font-bold text-xl";
+                    rowBg = "bg-yellow-900/20 hover:bg-yellow-900/30";
+                    icon = "👑 ";
+                } else if (rank === 2) {
+                    rankClass = "text-slate-300 font-bold text-lg";
+                    icon = "🥈 ";
+                } else if (rank === 3) {
+                    rankClass = "text-orange-400 font-bold text-lg";
+                    icon = "🥉 ";
+                }
+
+                const row = document.createElement('tr');
+                row.className = `border-b border-yellow-900/30 transition-colors ${rowBg}`;
+                
+                // Note the onclick handler on the Best Lap cell
+                row.innerHTML = `
+                    <td class="p-3 text-center ${rankClass}">${icon}#${rank}</td>
+                    <td class="p-3 font-medium text-white">${team.name}</td>
+                    <td class="p-3 text-right text-slate-400">${team.laps.length}</td>
+                    <td class="p-3 text-right text-emerald-400 font-mono text-sm clickable-cell" 
+                        onclick="showTeamDetails(${index})" title="Click to see all laps">
+                        ${formatTime(team.bestLap)}
+                    </td>
+                    <td class="p-3 text-right text-yellow-400 font-mono font-bold">${formatTime(team.totalTime)}</td>
+                `;
+                els.leaderboardBody.appendChild(row);
+            });
+        }
+
+        function renderCurrentLaps() {
+            els.lapsContainer.innerHTML = '';
+            
+            if (currentLaps.length === 0) {
+                els.lapsContainer.innerHTML = `<p class="text-slate-500 text-center italic mt-4 text-sm opacity-50">No laps recorded yet.</p>`;
+                return;
+            }
+
+            // Reverse loop to show newest lap at top
+            [...currentLaps].reverse().forEach((lapTime, index) => {
+                const actualIndex = currentLaps.length - 1 - index;
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center p-2 border-b border-yellow-900/30 text-sm animate-[fadeIn_0.3s_ease-out]";
+                div.innerHTML = `
+                    <span class="text-orange-300">Lap ${actualIndex + 1}</span>
+                    <span class="font-mono text-white">${formatTime(lapTime)}</span>
+                `;
+                els.lapsContainer.appendChild(div);
+            });
+        }
+
+        // --- Modal Logic ---
+        function showTeamDetails(index) {
+            const team = leaderboardData[index];
+            if (!team) return;
+
+            els.modalTeamName.textContent = team.name;
+            els.modalTotalTime.textContent = formatTime(team.totalTime);
+            els.modalBestLap.textContent = formatTime(team.bestLap);
+            els.modalLapBody.innerHTML = '';
+
+            if (team.laps.length === 0) {
+                els.modalLapBody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-slate-500 italic">No individual laps marked.</td></tr>';
+            } else {
+                team.laps.forEach((lapTime, i) => {
+                    // Highlight the best lap
+                    const isBest = lapTime === team.bestLap;
+                    const bgClass = isBest ? 'bg-emerald-900/30 text-emerald-300 font-bold' : 'text-slate-300 border-b border-yellow-900/10';
+                    
+                    const row = document.createElement('tr');
+                    row.className = bgClass;
+                    row.innerHTML = `
+                        <td class="p-2 pl-3">Lap ${i + 1} ${isBest ? '★' : ''}</td>
+                        <td class="p-2 pr-3 text-right font-mono">${formatTime(lapTime)}</td>
+                    `;
+                    els.modalLapBody.appendChild(row);
+                });
+            }
+
+            els.modal.classList.add('active');
+        }
+
+        function closeModal(event) {
+            // If event exists (clicked overlay) and target is not the overlay itself, ignore
+            if (event && event.target !== els.modal && !event.target.closest('.btn-gold')) return;
+            
+            els.modal.classList.remove('active');
+        }
+
+        // --- Utilities ---
+        function showStatus(msg, colorClass) {
+            els.statusMsg.textContent = msg;
+            els.statusMsg.className = `h-6 mt-2 text-sm font-bold tracking-wide uppercase animate-pulse ${colorClass}`;
+        }
+
+        function enableBtn(btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        function disableBtn(btn) {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // Add simple key listener for Spacebar to split lap
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && isRunning) {
+                e.preventDefault(); // prevent scroll
+                recordLap();
+            }
+        });
+
+    </script>
+</body>
+</html>
