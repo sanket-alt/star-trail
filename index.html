@@ -8,7 +8,7 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Amiri (Arabian style text) and Cinzel (Headers) -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
@@ -42,19 +42,10 @@
             font-family: 'Cinzel', serif;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e1b4b; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--gold); 
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e1b4b; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 4px; }
 
-        /* Glassmorphism Panels */
         .glass-panel {
             background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(10px);
@@ -63,18 +54,12 @@
             border-radius: 12px;
         }
 
-        .glass-panel:hover {
-            border-color: rgba(251, 191, 36, 0.6);
-        }
-
-        /* Gold Text Gradient */
         .text-gold-gradient {
             background: linear-gradient(to bottom, #fcd34d, #b45309);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* Button Styles */
         .btn-gold {
             background: linear-gradient(45deg, #b45309, #fcd34d);
             color: #0f172a;
@@ -92,18 +77,19 @@
             background: linear-gradient(45deg, #7f1d1d, #ef4444);
             color: white;
         }
-        .btn-red:hover {
-            filter: brightness(1.2);
-        }
+        .btn-red:hover { filter: brightness(1.2); }
 
-        /* Modal Animation */
-        @keyframes floatIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .btn-obj {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            transition: all 0.2s;
         }
-        .modal-content {
-            animation: floatIn 0.3s ease-out;
+        .btn-obj:hover {
+            background: rgba(251, 191, 36, 0.2);
+            transform: scale(1.05);
         }
+        .btn-obj:active { transform: scale(0.95); }
 
         .leaderboard-item {
             transition: all 0.2s;
@@ -114,6 +100,22 @@
             border-left: 4px solid var(--gold);
             cursor: pointer;
         }
+
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-content { animation: floatIn 0.3s ease-out; }
+        
+        .tab-active {
+            border-bottom: 2px solid #fbbf24;
+            color: #fbbf24;
+        }
+        .tab-inactive {
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-inactive:hover { color: #9ca3af; }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -138,36 +140,69 @@
             
             <!-- Timer & Control Panel -->
             <div class="glass-panel p-6">
-                <h2 class="cinzel text-2xl text-yellow-400 mb-4 border-b border-yellow-800 pb-2">
-                    <i class="fas fa-stopwatch"></i> Mission Control
+                <h2 class="cinzel text-2xl text-yellow-400 mb-4 border-b border-yellow-800 pb-2 flex justify-between items-center">
+                    <span><i class="fas fa-stopwatch"></i> Mission Control</span>
+                    <span id="currentAttemptDisplay" class="text-sm text-gray-400 font-sans">Attempt ?</span>
                 </h2>
 
-                <!-- Team & Object Input -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-yellow-200 mb-1 text-sm cinzel">Team Name</label>
-                        <input type="text" id="teamName" placeholder="e.g., Desert Scorpions" 
-                            class="w-full bg-slate-900/50 border border-yellow-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-400 transition">
+                <!-- Team Name Input -->
+                <div class="mb-6">
+                    <label class="block text-yellow-200 mb-1 text-sm cinzel">Team Name</label>
+                    <input type="text" id="teamName" placeholder="e.g., Desert Scorpions" onchange="checkTeamStatus()"
+                        class="w-full bg-slate-900/50 border border-yellow-700 text-white px-4 py-3 text-lg rounded focus:outline-none focus:border-yellow-400 transition">
+                    <p id="teamStatusMsg" class="text-xs text-yellow-500/80 mt-1 h-4"></p>
+                </div>
+
+                <!-- Live Scoring Section -->
+                <div class="bg-slate-900/60 p-4 rounded-lg border border-yellow-900/50 mb-6">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-yellow-200 cinzel text-sm uppercase tracking-widest">Live Object Scoring</h3>
+                        <div class="text-right">
+                            <span class="text-xs text-gray-400 uppercase block">Current Base Points</span>
+                            <span id="liveScoreDisplay" class="text-2xl font-mono font-bold text-green-400">0</span>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-yellow-200 mb-1 text-sm cinzel">Selected Object</label>
-                        <select id="objectSelect" onchange="updateBasePointsDisplay()"
-                            class="w-full bg-slate-900/50 border border-yellow-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-400 transition">
-                            <option value="100" data-name="Block">Block (100 pts)</option>
-                            <option value="150" data-name="Sphere">Sphere (150 pts)</option>
-                            <option value="200" data-name="Cylinder">Cylinder (200 pts)</option>
-                            <option value="250" data-name="Ring">Ring (250 pts)</option>
-                            <option value="300" data-name="Thin Flat">Thin Flat Object (300 pts)</option>
-                        </select>
+                    
+                    <!-- Object Buttons -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+                        <button onclick="addObject(100, 'Block')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1">
+                            <i class="fas fa-cube text-lg"></i>
+                            <span class="text-xs font-bold">Block (100)</span>
+                        </button>
+                        <button onclick="addObject(150, 'Sphere')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1">
+                            <i class="fas fa-circle text-lg"></i>
+                            <span class="text-xs font-bold">Sphere (150)</span>
+                        </button>
+                        <button onclick="addObject(200, 'Cylinder')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1">
+                            <i class="fas fa-database text-lg"></i>
+                            <span class="text-xs font-bold">Cylinder (200)</span>
+                        </button>
+                        <button onclick="addObject(250, 'Ring')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1">
+                            <i class="far fa-circle text-lg"></i>
+                            <span class="text-xs font-bold">Ring (250)</span>
+                        </button>
+                        <button onclick="addObject(300, 'Thin Flat')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1">
+                            <i class="fas fa-minus text-lg"></i>
+                            <span class="text-xs font-bold">Flat (300)</span>
+                        </button>
+                        <button onclick="clearObjects()" class="bg-red-900/20 border border-red-800 text-red-400 hover:bg-red-900/40 p-3 rounded flex flex-col items-center justify-center gap-1 transition">
+                            <i class="fas fa-undo"></i>
+                            <span class="text-xs">Reset Points</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Collected List -->
+                    <div class="bg-black/30 p-2 rounded min-h-[2rem] text-xs text-yellow-100/60 italic" id="collectedList">
+                        No objects collected yet...
                     </div>
                 </div>
 
                 <!-- The Big Timer -->
-                <div class="text-center mb-8 bg-black/30 rounded-xl py-6 border border-yellow-900/50">
-                    <div id="timerDisplay" class="text-6xl md:text-8xl font-mono text-yellow-400 tracking-widest drop-shadow-lg">
+                <div class="text-center mb-8 bg-black/30 rounded-xl py-6 border border-yellow-900/50 relative overflow-hidden">
+                    <div id="timerDisplay" class="text-6xl md:text-8xl font-mono text-yellow-400 tracking-widest drop-shadow-lg relative z-10">
                         00:00.00
                     </div>
-                    <div class="text-sm text-gray-400 mt-2">MM:SS.MS</div>
+                    <div class="text-sm text-gray-400 mt-2 relative z-10">MM:SS.MS</div>
                 </div>
 
                 <!-- Timer Controls -->
@@ -178,7 +213,7 @@
                     <button onclick="stopTimer()" id="stopBtn" disabled class="bg-gray-700 text-gray-300 px-8 py-3 rounded-lg text-lg uppercase tracking-wider w-32 border border-gray-600 hover:bg-gray-600 disabled:opacity-50">
                         Stop
                     </button>
-                    <button onclick="resetRun()" class="bg-transparent border border-yellow-600 text-yellow-500 px-4 py-3 rounded-lg hover:bg-yellow-900/30">
+                    <button onclick="resetRunUI()" class="bg-transparent border border-yellow-600 text-yellow-500 px-4 py-3 rounded-lg hover:bg-yellow-900/30">
                         <i class="fas fa-redo"></i>
                     </button>
                 </div>
@@ -225,7 +260,7 @@
             <div class="glass-panel p-6 h-full flex flex-col">
                 <h2 class="cinzel text-2xl text-yellow-400 mb-4 flex justify-between items-center border-b border-yellow-800 pb-2">
                     <span><i class="fas fa-trophy"></i> Leaderboard</span>
-                    <span class="text-xs font-sans text-gray-400 font-normal">Rank by Score</span>
+                    <span class="text-xs font-sans text-gray-400 font-normal">Ranking: Best of 2</span>
                 </h2>
                 
                 <div class="flex-1 overflow-y-auto pr-2" style="max-height: 600px;">
@@ -240,58 +275,61 @@
 
     <!-- Details Modal -->
     <div id="detailsModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="modal-content bg-slate-900 border border-yellow-600 p-8 rounded-xl max-w-md w-full shadow-2xl relative bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
-                <i class="fas fa-times fa-lg"></i>
-            </button>
+        <div class="modal-content bg-slate-900 border border-yellow-600 rounded-xl max-w-md w-full shadow-2xl relative bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')] overflow-hidden flex flex-col max-h-[90vh]">
             
-            <h2 id="modalTeamName" class="text-3xl text-gold-gradient cinzel font-bold mb-1 text-center">Team Name</h2>
-            <p id="modalRank" class="text-center text-gray-400 text-sm mb-6 uppercase tracking-widest">Rank #1</p>
-
-            <div class="space-y-4">
-                <div class="flex justify-between border-b border-white/10 pb-2">
-                    <span class="text-yellow-200">Object Type</span>
-                    <span id="modalObject" class="font-bold text-white">Sphere</span>
-                </div>
-                <div class="flex justify-between border-b border-white/10 pb-2">
-                    <span class="text-yellow-200">Base Points</span>
-                    <span id="modalBasePts" class="font-mono text-yellow-400">150</span>
-                </div>
-                <div class="flex justify-between border-b border-white/10 pb-2">
-                    <span class="text-yellow-200">Run Time</span>
-                    <span id="modalRunTime" class="font-mono text-white">45.20s</span>
-                </div>
-                <div class="flex justify-between border-b border-white/10 pb-2">
-                    <span class="text-red-300">Penalties Added</span>
-                    <span id="modalPenalties" class="font-mono text-red-400">+5s</span>
-                </div>
-                <div class="flex justify-between border-b border-white/10 pb-2 bg-white/5 p-2 rounded">
-                    <span class="text-yellow-200 font-bold">Total Calc Time</span>
-                    <span id="modalTotalTime" class="font-mono text-white font-bold">50.20s</span>
-                </div>
-                
-                <div class="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-600/30 text-center mt-4">
-                    <div class="text-xs uppercase text-yellow-200 tracking-widest mb-1">Final Score</div>
-                    <div id="modalFinalScore" class="text-5xl font-mono text-yellow-400 drop-shadow-md">2.98</div>
-                </div>
-
-                <div class="mt-4 pt-4 border-t border-white/10">
-                    <h4 class="text-xs text-gray-400 uppercase mb-2">Penalty Details:</h4>
-                    <ul id="modalPenaltyLog" class="text-xs text-red-300 list-disc pl-4 space-y-1">
-                        <!-- Log items -->
-                    </ul>
-                </div>
+            <!-- Modal Header -->
+            <div class="p-6 bg-black/40 border-b border-yellow-900/50 relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <i class="fas fa-times fa-lg"></i>
+                </button>
+                <h2 id="modalTeamName" class="text-3xl text-gold-gradient cinzel font-bold mb-1 text-center">Team Name</h2>
+                <p id="modalRank" class="text-center text-gray-400 text-sm uppercase tracking-widest">Rank #1</p>
             </div>
 
-            <button id="deleteTeamBtn" class="mt-6 w-full border border-red-900 text-red-500 hover:bg-red-900/20 py-2 rounded text-sm transition">
-                Disqualify / Delete Entry
-            </button>
+            <!-- Tabs -->
+            <div class="flex border-b border-yellow-900/50 bg-black/20" id="modalTabs">
+                <!-- Tabs injected via JS -->
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div id="modalBody" class="p-6 overflow-y-auto flex-1">
+                <!-- Content injected via JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-yellow-900/50 bg-black/40">
+                 <button id="deleteTeamBtn" class="w-full border border-red-900 text-red-500 hover:bg-red-900/20 py-2 rounded text-sm transition">
+                    Delete Team History
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
         // --- State Management ---
-        let teams = JSON.parse(localStorage.getItem('roboTeams')) || [];
+        // Structure: Array of Team Objects -> { name: "Name", attempts: [ {run1}, {run2} ] }
+        let allTeams = JSON.parse(localStorage.getItem('roboTeamsV2')) || [];
+        
+        // Migration from old version (if exists)
+        const oldData = localStorage.getItem('roboTeams');
+        if (oldData) {
+            const flatList = JSON.parse(oldData);
+            flatList.forEach(run => {
+                let team = allTeams.find(t => t.name === run.name);
+                if (!team) {
+                    team = { name: run.name, attempts: [] };
+                    allTeams.push(team);
+                }
+                // Adapt old run format
+                team.attempts.push({
+                    ...run,
+                    collectedItems: run.object ? [run.object] : [] // fallback
+                });
+            });
+            localStorage.removeItem('roboTeams');
+            localStorage.setItem('roboTeamsV2', JSON.stringify(allTeams));
+        }
+
         let timerInterval;
         let startTime;
         let elapsed = 0;
@@ -300,14 +338,74 @@
         // Current Run Data
         let currentPenaltyTime = 0;
         let penaltyLog = [];
+        let currentBasePoints = 0;
+        let collectedItems = [];
+
+        // --- Live Scoring Logic ---
+        function addObject(points, name) {
+            currentBasePoints += points;
+            collectedItems.push(name);
+            updateScoreUI();
+        }
+
+        function clearObjects() {
+            currentBasePoints = 0;
+            collectedItems = [];
+            updateScoreUI();
+        }
+
+        function updateScoreUI() {
+            document.getElementById('liveScoreDisplay').textContent = currentBasePoints;
+            const listEl = document.getElementById('collectedList');
+            
+            if (collectedItems.length === 0) {
+                listEl.textContent = "No objects collected yet...";
+            } else {
+                // Group items: "Block x2, Sphere x1"
+                const counts = {};
+                collectedItems.forEach(x => { counts[x] = (counts[x] || 0) + 1; });
+                listEl.textContent = Object.entries(counts)
+                    .map(([k, v]) => `${k} x${v}`)
+                    .join(', ');
+            }
+        }
+
+        // --- Team Status Check ---
+        function checkTeamStatus() {
+            const name = document.getElementById('teamName').value.trim();
+            const msgEl = document.getElementById('teamStatusMsg');
+            const attemptLabel = document.getElementById('currentAttemptDisplay');
+            
+            if (!name) {
+                msgEl.textContent = "";
+                attemptLabel.textContent = "Attempt ?";
+                return;
+            }
+
+            const team = allTeams.find(t => t.name.toLowerCase() === name.toLowerCase());
+            if (team) {
+                const count = team.attempts.length;
+                attemptLabel.textContent = `Attempt ${count + 1}`;
+                if (count >= 2) {
+                    msgEl.textContent = `Warning: ${name} has already used 2 attempts.`;
+                    msgEl.className = "text-xs text-red-400 mt-1 h-4";
+                } else {
+                    msgEl.textContent = `${name} has completed ${count} attempt(s).`;
+                    msgEl.className = "text-xs text-green-400 mt-1 h-4";
+                }
+            } else {
+                attemptLabel.textContent = "Attempt 1";
+                msgEl.textContent = "New Team";
+                msgEl.className = "text-xs text-blue-400 mt-1 h-4";
+            }
+        }
 
         // --- Timer Functions ---
         function startTimer() {
             if (isRunning) return;
-            
             isRunning = true;
             startTime = Date.now() - elapsed;
-            timerInterval = setInterval(updateTimerUI, 10); // Update every 10ms
+            timerInterval = setInterval(updateTimerUI, 10);
             
             document.getElementById('startBtn').classList.add('hidden');
             document.getElementById('stopBtn').classList.remove('hidden');
@@ -316,7 +414,6 @@
 
         function stopTimer() {
             if (!isRunning) return;
-            
             isRunning = false;
             clearInterval(timerInterval);
             
@@ -324,47 +421,46 @@
             document.getElementById('stopBtn').classList.add('hidden');
         }
 
-        function resetRun() {
+        function resetRunUI() {
             stopTimer();
             elapsed = 0;
             currentPenaltyTime = 0;
             penaltyLog = [];
+            currentBasePoints = 0;
+            collectedItems = [];
             
             document.getElementById('timerDisplay').textContent = "00:00.00";
-            document.getElementById('teamName').value = "";
             document.getElementById('penaltyLogList').innerHTML = "";
+            // Don't clear Team Name for convenience of 2nd run
+            checkTeamStatus(); 
             updateStatsUI();
+            updateScoreUI();
         }
 
         function updateTimerUI() {
             const now = Date.now();
             elapsed = now - startTime;
             
-            // Format time
             const totalSeconds = elapsed / 1000;
             const mins = Math.floor(totalSeconds / 60);
             const secs = Math.floor(totalSeconds % 60);
             const ms = Math.floor((elapsed % 1000) / 10);
 
-            const formatted = 
+            document.getElementById('timerDisplay').textContent = 
                 `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
             
-            document.getElementById('timerDisplay').textContent = formatted;
             updateStatsUI();
             
-            // Check Hard Limit (5 mins = 300000ms)
-            if (elapsed >= 300000) {
+            if (elapsed >= 300000) { // 5 mins
                 stopTimer();
                 alert("HARD TIME LIMIT REACHED (5 MINS). Run Ends. Score is 0.");
             }
         }
 
-        // --- Penalty Logic ---
         function addPenalty(seconds, reason) {
             currentPenaltyTime += seconds;
             penaltyLog.push(`${reason} (+${seconds}s)`);
             
-            // Add visual log
             const logEl = document.getElementById('penaltyLogList');
             logEl.innerHTML = penaltyLog.map(p => `<span>${p}</span>`).join(', ');
             
@@ -372,51 +468,37 @@
         }
 
         function updateStatsUI() {
-            // Time in seconds
             const actualTimeSec = elapsed / 1000;
             const totalTime = actualTimeSec + currentPenaltyTime;
-            
             document.getElementById('penaltyDisplay').textContent = `+${currentPenaltyTime}s`;
             document.getElementById('totalTimeDisplay').textContent = `${totalTime.toFixed(2)}s`;
         }
 
-        // --- Scoring & Submission ---
+        // --- Completion ---
         function finishAndSave() {
             stopTimer();
             
-            const name = document.getElementById('teamName').value.trim();
+            let name = document.getElementById('teamName').value.trim();
             if (!name) {
                 alert("Please enter a Team Name.");
                 return;
             }
 
-            const select = document.getElementById('objectSelect');
-            const basePoints = parseInt(select.value);
-            const objectName = select.options[select.selectedIndex].getAttribute('data-name');
-            
             const actualTimeSec = elapsed / 1000;
-            const totalTime = actualTimeSec + currentPenaltyTime; // Formula Denominator
-
+            const totalTime = actualTimeSec + currentPenaltyTime;
             let finalScore = 0;
 
-            // Logic: 
-            // 1. Hard Time Limit: If Total Time > 300 (5 mins), Score = 0 (or if actual run exceeded it)
-            // 2. Improper Finish: Prompt implies timer keeps running, which we handle by just stopping timer late.
-            // 3. Score Formula = Base / TotalTime
-            
+            // Scoring Logic
             if (totalTime >= 300 || elapsed >= 300000) {
                 finalScore = 0;
             } else if (totalTime > 0) {
-                finalScore = basePoints / totalTime;
-            } else {
-                finalScore = 0;
+                finalScore = currentBasePoints / totalTime;
             }
 
-            const newEntry = {
-                id: Date.now(),
-                name: name,
-                object: objectName,
-                basePoints: basePoints,
+            const newRun = {
+                timestamp: Date.now(),
+                basePoints: currentBasePoints,
+                collectedItems: [...collectedItems],
                 rawTime: actualTimeSec,
                 penaltyTime: currentPenaltyTime,
                 totalTime: totalTime,
@@ -424,26 +506,47 @@
                 logs: [...penaltyLog]
             };
 
-            teams.push(newEntry);
+            // Find or Create Team
+            let team = allTeams.find(t => t.name.toLowerCase() === name.toLowerCase());
+            if (!team) {
+                team = { name: name, attempts: [] };
+                allTeams.push(team);
+            }
+
+            // Logic for Attempt Limit
+            if (team.attempts.length >= 2) {
+                if(!confirm(`Team "${team.name}" already has 2 attempts. Do you want to record this as a 3rd attempt (Extra)?`)) {
+                    return;
+                }
+            }
+
+            team.attempts.push(newRun);
             saveAndRender();
-            resetRun();
+            alert(`Run saved! Score: ${finalScore.toFixed(4)}`);
+            resetRunUI();
+            document.getElementById('teamName').value = ""; // Clear name after save
+            checkTeamStatus();
         }
 
-        // --- Leaderboard & Data ---
         function saveAndRender() {
-            // Sort: Higher score is better
-            teams.sort((a, b) => b.score - a.score);
-            localStorage.setItem('roboTeams', JSON.stringify(teams));
+            localStorage.setItem('roboTeamsV2', JSON.stringify(allTeams));
             
+            // Calculate Best Scores
+            const rankedTeams = allTeams.map(team => {
+                // Find max score among attempts
+                const bestScore = team.attempts.reduce((max, run) => Math.max(max, run.score), 0);
+                return { ...team, bestScore };
+            }).sort((a, b) => b.bestScore - a.bestScore);
+
             const list = document.getElementById('leaderboardList');
             list.innerHTML = "";
 
-            if(teams.length === 0) {
+            if(rankedTeams.length === 0) {
                 list.innerHTML = '<p class="text-center text-gray-500 mt-10 italic">The arena is empty...</p>';
                 return;
             }
 
-            teams.forEach((team, index) => {
+            rankedTeams.forEach((team, index) => {
                 const rank = index + 1;
                 let rankColor = "text-gray-400";
                 let borderColor = "border-gray-700";
@@ -461,12 +564,12 @@
                         <div class="cinzel text-2xl font-bold w-8 text-center ${rankColor}">#${rank}</div>
                         <div>
                             <div class="font-bold text-yellow-100 text-lg">${team.name}</div>
-                            <div class="text-xs text-gray-400">${team.object}</div>
+                            <div class="text-xs text-gray-400">Attempts: ${team.attempts.length}</div>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-2xl font-mono font-bold text-gold-gradient">${team.score.toFixed(3)}</div>
-                        <div class="text-xs text-gray-500">Score</div>
+                        <div class="text-2xl font-mono font-bold text-gold-gradient">${team.bestScore.toFixed(3)}</div>
+                        <div class="text-xs text-gray-500">Best Score</div>
                     </div>
                 `;
                 list.appendChild(div);
@@ -475,41 +578,44 @@
 
         function clearAllData() {
             if(confirm("Are you sure you want to reset the entire tournament?")) {
-                teams = [];
+                allTeams = [];
                 saveAndRender();
+                resetRunUI();
             }
         }
 
-        // --- Modal ---
+        // --- Details Modal Logic ---
+        let currentModalTeam = null;
+
         function showDetails(team, rank) {
+            currentModalTeam = team;
             const modal = document.getElementById('detailsModal');
-            
             document.getElementById('modalTeamName').textContent = team.name;
             document.getElementById('modalRank').textContent = `Rank #${rank}`;
-            document.getElementById('modalObject').textContent = team.object;
-            document.getElementById('modalBasePts').textContent = team.basePoints;
-            document.getElementById('modalRunTime').textContent = team.rawTime.toFixed(2) + "s";
-            document.getElementById('modalPenalties').textContent = "+" + team.penaltyTime + "s";
-            document.getElementById('modalTotalTime').textContent = team.totalTime.toFixed(2) + "s";
-            document.getElementById('modalFinalScore').textContent = team.score.toFixed(4);
+
+            // Setup Tabs
+            const tabsContainer = document.getElementById('modalTabs');
+            tabsContainer.innerHTML = '';
             
-            const logList = document.getElementById('modalPenaltyLog');
-            logList.innerHTML = "";
-            if (team.logs.length === 0) {
-                logList.innerHTML = "<li>No penalties recorded.</li>";
+            team.attempts.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `flex-1 py-3 text-sm font-bold uppercase tracking-wider transition ${idx === 0 ? 'tab-active' : 'tab-inactive'}`;
+                btn.textContent = `Attempt ${idx + 1}`;
+                btn.onclick = () => renderRunDetails(idx, team.attempts[idx], btn);
+                tabsContainer.appendChild(btn);
+            });
+
+            // Render first attempt by default
+            if (team.attempts.length > 0) {
+                renderRunDetails(0, team.attempts[0], tabsContainer.children[0]);
             } else {
-                team.logs.forEach(log => {
-                    const li = document.createElement('li');
-                    li.textContent = log;
-                    logList.appendChild(li);
-                });
+                document.getElementById('modalBody').innerHTML = '<p class="text-gray-500 text-center mt-4">No attempts recorded.</p>';
             }
 
-            // Setup Delete Button
-            const delBtn = document.getElementById('deleteTeamBtn');
-            delBtn.onclick = () => {
-                if(confirm(`Delete record for ${team.name}?`)) {
-                    teams = teams.filter(t => t.id !== team.id);
+            // Delete Logic
+            document.getElementById('deleteTeamBtn').onclick = () => {
+                if(confirm(`Delete ALL history for ${team.name}?`)) {
+                    allTeams = allTeams.filter(t => t.name !== team.name);
                     saveAndRender();
                     closeModal();
                 }
@@ -518,11 +624,61 @@
             modal.classList.remove('hidden');
         }
 
+        function renderRunDetails(idx, run, activeTabBtn) {
+            // Update Tab Styles
+            const tabs = document.getElementById('modalTabs').children;
+            for(let t of tabs) t.className = t.className.replace('tab-active', 'tab-inactive');
+            activeTabBtn.className = activeTabBtn.className.replace('tab-inactive', 'tab-active');
+
+            const body = document.getElementById('modalBody');
+            
+            // Format collected items
+            const counts = {};
+            run.collectedItems.forEach(x => { counts[x] = (counts[x] || 0) + 1; });
+            const itemsStr = Object.entries(counts).map(([k, v]) => `${k} x${v}`).join(', ') || "None";
+
+            body.innerHTML = `
+                <div class="space-y-4 animate-fade-in">
+                    <div class="flex justify-between border-b border-white/10 pb-2">
+                        <span class="text-yellow-200">Collected Items</span>
+                        <span class="font-bold text-white text-right w-1/2">${itemsStr}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/10 pb-2">
+                        <span class="text-yellow-200">Base Points</span>
+                        <span class="font-mono text-yellow-400">${run.basePoints}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/10 pb-2">
+                        <span class="text-yellow-200">Run Time</span>
+                        <span class="font-mono text-white">${run.rawTime.toFixed(2)}s</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/10 pb-2">
+                        <span class="text-red-300">Penalties</span>
+                        <span class="font-mono text-red-400">+${run.penaltyTime}s</span>
+                    </div>
+                    <div class="flex justify-between border-b border-white/10 pb-2 bg-white/5 p-2 rounded">
+                        <span class="text-yellow-200 font-bold">Total Time</span>
+                        <span class="font-mono text-white font-bold">${run.totalTime.toFixed(2)}s</span>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-600/30 text-center mt-4">
+                        <div class="text-xs uppercase text-yellow-200 tracking-widest mb-1">Attempt Score</div>
+                        <div class="text-5xl font-mono text-yellow-400 drop-shadow-md">${run.score.toFixed(4)}</div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-white/10">
+                        <h4 class="text-xs text-gray-400 uppercase mb-2">Penalty Log:</h4>
+                        <ul class="text-xs text-red-300 list-disc pl-4 space-y-1">
+                            ${run.logs.length ? run.logs.map(l => `<li>${l}</li>`).join('') : '<li class="text-gray-500">Clean run</li>'}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
         function closeModal() {
             document.getElementById('detailsModal').classList.add('hidden');
         }
 
-        // Close modal on outside click
         document.getElementById('detailsModal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('detailsModal')) closeModal();
         });
