@@ -185,7 +185,13 @@
                             <i class="fas fa-minus text-lg"></i>
                             <span class="text-xs font-bold">Flat (300)</span>
                         </button>
-                        <button onclick="clearObjects()" class="bg-red-900/20 border border-red-800 text-red-400 hover:bg-red-900/40 p-3 rounded flex flex-col items-center justify-center gap-1 transition">
+                        <!-- NEW 50 POINT BONUS BUTTON -->
+                        <button onclick="addObject(50, 'Bonus')" class="btn-obj p-3 rounded flex flex-col items-center justify-center gap-1 border-yellow-500/50 bg-yellow-900/20">
+                            <i class="fas fa-star text-lg text-yellow-300"></i>
+                            <span class="text-xs font-bold text-yellow-300">Bonus (50)</span>
+                        </button>
+
+                        <button onclick="clearObjects()" class="bg-red-900/20 border border-red-800 text-red-400 hover:bg-red-900/40 p-3 rounded flex flex-col items-center justify-center gap-1 transition col-span-2 md:col-span-3 mt-2">
                             <i class="fas fa-undo"></i>
                             <span class="text-xs">Reset Points</span>
                         </button>
@@ -451,9 +457,10 @@
             
             updateStatsUI();
             
-            if (elapsed >= 300000) { // 5 mins
+            // UPDATED: Hard Limit 10 minutes = 600,000 ms
+            if (elapsed >= 600000) { 
                 stopTimer();
-                alert("HARD TIME LIMIT REACHED (5 MINS). Run Ends. Score is 0.");
+                alert("HARD TIME LIMIT REACHED (10 MINS). Run Ends. Score is 0.");
             }
         }
 
@@ -489,7 +496,8 @@
             let finalScore = 0;
 
             // Scoring Logic
-            if (totalTime >= 300 || elapsed >= 300000) {
+            // UPDATED: 10 Minute Limit (600s / 600000ms)
+            if (totalTime >= 600 || elapsed >= 600000) {
                 finalScore = 0;
             } else if (totalTime > 0) {
                 finalScore = currentBasePoints / totalTime;
