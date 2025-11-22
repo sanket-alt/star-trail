@@ -3,70 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desert Sands Robotics Contest</title>
+    <title>The Sultan's Robotics Arena</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts for the Arabian Theme -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Reem+Kufi:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Fonts: Amiri (Arabian style text) and Cinzel (Headers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
-        /* Custom Theme Variables */
         :root {
-            --color-gold: #FFD700;
-            --color-gold-dim: #C5A000;
-            --color-night: #0F172A;
-            --color-sand: #F4A460;
-            --color-jewel-red: #991b1b;
-            --color-jewel-green: #065f46;
+            --gold: #fbbf24;
+            --gold-dark: #d97706;
+            --midnight: #0f172a;
+            --deep-purple: #312e81;
+            --parchment: #fffbeb;
         }
 
         body {
-            background: radial-gradient(circle at top, #1e1b4b, #0f172a, #000000);
-            color: var(--color-gold);
-            font-family: 'Reem Kufi', sans-serif;
+            font-family: 'Amiri', serif;
+            background: radial-gradient(circle at top, #1e1b4b, #0f172a);
+            color: var(--parchment);
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Animated Starry Background */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
             background-image: 
-                radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
-            background-repeat: repeat;
-            background-size: 200px 200px;
-            opacity: 0.3;
-            z-index: -1;
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
         }
 
-        h1, h2, h3, .decorative-font {
-            font-family: 'Cinzel Decorative', cursive;
-        }
-
-        /* Glassmorphism Cards with Gold Borders */
-        .arabian-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--color-gold-dim);
-            border-radius: 1rem;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .arabian-card::before {
-            content: '';
-            position: absolute;
-            top: 4px; left: 4px; right: 4px; bottom: 4px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 0.8rem;
-            pointer-events: none;
+        h1, h2, h3, .cinzel {
+            font-family: 'Cinzel', serif;
         }
 
         /* Custom Scrollbar */
@@ -74,614 +47,488 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a; 
+            background: #1e1b4b; 
         }
         ::-webkit-scrollbar-thumb {
-            background: var(--color-gold-dim); 
+            background: var(--gold); 
             border-radius: 4px;
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
+            border-radius: 12px;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(251, 191, 36, 0.6);
+        }
+
+        /* Gold Text Gradient */
+        .text-gold-gradient {
+            background: linear-gradient(to bottom, #fcd34d, #b45309);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Button Styles */
         .btn-gold {
-            background: linear-gradient(45deg, #C5A000, #FFD700, #C5A000);
-            color: #000;
+            background: linear-gradient(45deg, #b45309, #fcd34d);
+            color: #0f172a;
+            border: none;
             font-weight: bold;
-            text-transform: uppercase;
-            border: 1px solid #fff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
         }
-        .btn-gold:hover:not(:disabled) {
+        .btn-gold:hover {
+            background: linear-gradient(45deg, #fcd34d, #fffbeb);
             transform: translateY(-2px);
-            box-shadow: 0 0 15px var(--color-gold);
-        }
-        .btn-gold:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: #555;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
         }
 
-        .btn-stop {
-            background: linear-gradient(45deg, #7f1d1d, #991b1b, #7f1d1d);
+        .btn-red {
+            background: linear-gradient(45deg, #7f1d1d, #ef4444);
             color: white;
-            border: 1px solid #ff9999;
         }
-        .btn-stop:hover {
-            box-shadow: 0 0 15px red;
-        }
-
-        .btn-lap {
-            background: linear-gradient(45deg, #064e3b, #065f46, #064e3b);
-            color: white;
-            border: 1px solid #99f6e4;
+        .btn-red:hover {
+            filter: brightness(1.2);
         }
 
-        /* Neon Text Effect */
-        .neon-text {
-            text-shadow: 0 0 5px var(--color-gold), 0 0 10px var(--color-gold-dim);
-        }
-        
-        .timer-display {
-            font-feature-settings: "tnum";
-            font-variant-numeric: tabular-nums;
-        }
-
-        /* Interactive Table Cells */
-        .clickable-cell {
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-        }
-        .clickable-cell:hover {
-            background-color: rgba(255, 215, 0, 0.1);
-            text-shadow: 0 0 8px #4ade80;
-        }
-        .clickable-cell::after {
-            content: '👁️ View';
-            position: absolute;
-            top: -10px;
-            right: 0;
-            font-size: 0.6rem;
-            background: var(--color-gold-dim);
-            color: black;
-            padding: 2px 4px;
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .clickable-cell:hover::after {
-            opacity: 1;
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
+        /* Modal Animation */
+        @keyframes floatIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal-content {
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: floatIn 0.3s ease-out;
         }
-        .modal-overlay.active .modal-content {
-            transform: scale(1);
+
+        .leaderboard-item {
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .leaderboard-item:hover {
+            background: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid var(--gold);
+            cursor: pointer;
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="stars"></div>
-
     <!-- Header -->
-    <header class="text-center mb-8 relative z-10">
-        <h1 class="text-4xl md:text-6xl text-yellow-400 mb-2 drop-shadow-lg neon-text">Star Trail</h1>
-        <p class="text-orange-200 text-lg tracking-widest uppercase">Line Follower Robotics Contest</p>
+    <header class="text-center mb-8 relative">
+        <div class="absolute top-0 right-0">
+            <button onclick="clearAllData()" class="text-xs text-red-400 hover:text-red-200 border border-red-900 p-2 rounded hover:bg-red-900/50 transition">
+                <i class="fas fa-trash"></i> Reset Tournament
+            </button>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold text-gold-gradient mb-2 tracking-wider">
+            <i class="fas fa-robot mx-2"></i> The Sultan's Arena
+        </h1>
+        <p class="text-lg text-yellow-100/70 italic">Robotics Evaluation & Scoring System</p>
     </header>
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+    <main class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- LEFT: Active Run Controls -->
-        <div class="lg:col-span-5 flex flex-col gap-6">
+        <!-- Left Column: Controls -->
+        <section class="lg:col-span-7 space-y-6">
             
-            <!-- Input & Timer Card -->
-            <div class="arabian-card p-6 md:p-8 text-center">
-                
-                <!-- Team Input -->
-                <div class="mb-6">
-                    <label class="block text-orange-200 text-sm mb-2 uppercase tracking-wide">Team Name</label>
-                    <input type="text" id="teamNameInput" placeholder="Enter Team Name..." 
-                        class="w-full bg-slate-900 border-2 border-yellow-600 text-yellow-100 text-xl p-3 rounded focus:outline-none focus:border-yellow-400 focus:shadow-[0_0_10px_#ffd700] text-center placeholder-slate-600 transition-all">
+            <!-- Timer & Control Panel -->
+            <div class="glass-panel p-6">
+                <h2 class="cinzel text-2xl text-yellow-400 mb-4 border-b border-yellow-800 pb-2">
+                    <i class="fas fa-stopwatch"></i> Mission Control
+                </h2>
+
+                <!-- Team & Object Input -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-yellow-200 mb-1 text-sm cinzel">Team Name</label>
+                        <input type="text" id="teamName" placeholder="e.g., Desert Scorpions" 
+                            class="w-full bg-slate-900/50 border border-yellow-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-400 transition">
+                    </div>
+                    <div>
+                        <label class="block text-yellow-200 mb-1 text-sm cinzel">Selected Object</label>
+                        <select id="objectSelect" onchange="updateBasePointsDisplay()"
+                            class="w-full bg-slate-900/50 border border-yellow-700 text-white px-4 py-2 rounded focus:outline-none focus:border-yellow-400 transition">
+                            <option value="100" data-name="Block">Block (100 pts)</option>
+                            <option value="150" data-name="Sphere">Sphere (150 pts)</option>
+                            <option value="200" data-name="Cylinder">Cylinder (200 pts)</option>
+                            <option value="250" data-name="Ring">Ring (250 pts)</option>
+                            <option value="300" data-name="Thin Flat">Thin Flat Object (300 pts)</option>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Timer Display -->
-                <div class="mb-8 relative">
-                    <div class="text-6xl md:text-7xl font-bold timer-display text-white tracking-wider" id="mainTimer">00:00:00</div>
-                    <div class="text-sm text-orange-300 mt-1">MM : SS : MS</div>
+                <!-- The Big Timer -->
+                <div class="text-center mb-8 bg-black/30 rounded-xl py-6 border border-yellow-900/50">
+                    <div id="timerDisplay" class="text-6xl md:text-8xl font-mono text-yellow-400 tracking-widest drop-shadow-lg">
+                        00:00.00
+                    </div>
+                    <div class="text-sm text-gray-400 mt-2">MM:SS.MS</div>
                 </div>
 
-                <!-- Controls -->
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <button onclick="startTimer()" id="startBtn" class="btn-gold py-4 rounded text-lg decorative-font col-span-2">
-                        Start Run
+                <!-- Timer Controls -->
+                <div class="flex justify-center gap-4 mb-6">
+                    <button onclick="startTimer()" id="startBtn" class="btn-gold px-8 py-3 rounded-lg text-lg uppercase tracking-wider w-32">
+                        Start
                     </button>
-                    
-                    <button onclick="recordLap()" id="lapBtn" disabled class="btn-lap py-3 rounded font-bold uppercase tracking-wide opacity-50 cursor-not-allowed transition-all">
-                        Mark Lap
-                    </button>
-                    
-                    <button onclick="stopTimer()" id="stopBtn" disabled class="btn-stop py-3 rounded font-bold uppercase tracking-wide opacity-50 cursor-not-allowed transition-all">
+                    <button onclick="stopTimer()" id="stopBtn" disabled class="bg-gray-700 text-gray-300 px-8 py-3 rounded-lg text-lg uppercase tracking-wider w-32 border border-gray-600 hover:bg-gray-600 disabled:opacity-50">
                         Stop
                     </button>
-                </div>
-
-                <button onclick="resetUI()" id="resetBtn" class="hidden w-full border border-yellow-600 text-yellow-500 py-2 rounded hover:bg-yellow-900/30 transition-colors">
-                    New Run
-                </button>
-
-                <!-- Status Message -->
-                <div id="statusMsg" class="h-6 mt-2 text-sm text-yellow-200 font-light"></div>
-            </div>
-
-            <!-- Current Laps List -->
-            <div class="arabian-card p-6 flex-grow">
-                <h3 class="text-2xl text-center text-orange-200 mb-4 border-b border-yellow-800 pb-2">Current Run Laps</h3>
-                <div class="overflow-y-auto max-h-64 pr-2" id="currentLapsContainer">
-                    <p class="text-slate-500 text-center italic mt-10">No laps recorded yet.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT: Leaderboard -->
-        <div class="lg:col-span-7">
-            <div class="arabian-card h-full p-6">
-                <!-- Leaderboard Header with CSV Button -->
-                <div class="flex flex-wrap justify-between items-end mb-6 border-b-2 border-yellow-700 pb-4 gap-2">
-                    <div>
-                        <h2 class="text-3xl text-yellow-400 neon-text">Leaderboard</h2>
-                        <span class="text-xs text-orange-300 italic">Sorted by Total Time</span>
-                    </div>
-                    <button onclick="exportToCSV()" class="flex items-center gap-2 bg-yellow-900/40 hover:bg-yellow-800 text-yellow-300 border border-yellow-600 px-3 py-1.5 rounded text-sm transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        Export CSV
+                    <button onclick="resetRun()" class="bg-transparent border border-yellow-600 text-yellow-500 px-4 py-3 rounded-lg hover:bg-yellow-900/30">
+                        <i class="fas fa-redo"></i>
                     </button>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="text-orange-200 border-b border-yellow-800">
-                                <th class="p-3 text-center">Rank</th>
-                                <th class="p-3">Team Name</th>
-                                <th class="p-3 text-right">Laps</th>
-                                <th class="p-3 text-right">Best Lap</th>
-                                <th class="p-3 text-right">Total Time</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leaderboardBody">
-                            <!-- Rows will be injected here -->
-                            <tr>
-                                <td colspan="5" class="text-center p-10 text-slate-500 italic">
-                                    The sands are empty. Start the first run.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Penalties Section -->
+                <div class="bg-red-900/20 p-4 rounded-lg border border-red-900/50 mb-6">
+                    <h3 class="text-red-300 mb-3 cinzel text-center">Penalty Log</h3>
+                    
+                    <div class="flex flex-wrap justify-center gap-3 mb-4">
+                        <button onclick="addPenalty(5, 'Obstacle Contact')" class="btn-red px-4 py-2 rounded text-sm shadow-lg active:scale-95 transition">
+                            <i class="fas fa-exclamation-triangle"></i> Obstacle (+5s)
+                        </button>
+                        <button onclick="addPenalty(20, 'Dropped Object')" class="btn-red px-4 py-2 rounded text-sm shadow-lg active:scale-95 transition">
+                            <i class="fas fa-hand-holding"></i> Dropped (+20s)
+                        </button>
+                        <button onclick="addPenalty(20, 'Hand of God')" class="btn-red px-4 py-2 rounded text-sm shadow-lg active:scale-95 transition">
+                            <i class="fas fa-hand-paper"></i> Driver Help (+20s)
+                        </button>
+                    </div>
+
+                    <!-- Current Run Stats -->
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="bg-black/40 p-2 rounded">
+                            <span class="block text-xs text-gray-400 uppercase">Penalty Time</span>
+                            <span id="penaltyDisplay" class="text-xl text-red-400 font-mono">+0s</span>
+                        </div>
+                        <div class="bg-black/40 p-2 rounded">
+                            <span class="block text-xs text-gray-400 uppercase">Est. Total Time</span>
+                            <span id="totalTimeDisplay" class="text-xl text-white font-mono">0s</span>
+                        </div>
+                    </div>
+                    <div id="penaltyLogList" class="mt-2 text-xs text-red-200/70 text-center italic"></div>
+                </div>
+
+                <!-- Submit -->
+                <button onclick="finishAndSave()" class="w-full btn-gold py-4 rounded-lg text-xl shadow-xl cinzel border-t border-white/20">
+                    <i class="fas fa-flag-checkered"></i> Finalize Run
+                </button>
+            </div>
+        </section>
+
+        <!-- Right Column: Leaderboard -->
+        <section class="lg:col-span-5">
+            <div class="glass-panel p-6 h-full flex flex-col">
+                <h2 class="cinzel text-2xl text-yellow-400 mb-4 flex justify-between items-center border-b border-yellow-800 pb-2">
+                    <span><i class="fas fa-trophy"></i> Leaderboard</span>
+                    <span class="text-xs font-sans text-gray-400 font-normal">Rank by Score</span>
+                </h2>
+                
+                <div class="flex-1 overflow-y-auto pr-2" style="max-height: 600px;">
+                    <div id="leaderboardList" class="space-y-3">
+                        <!-- Items injected via JS -->
+                        <p class="text-center text-gray-500 mt-10 italic">The arena is empty...</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="text-center mt-12 text-yellow-800 text-sm relative z-10 pb-4 flex justify-center gap-4">
-        <button onclick="clearData()" class="text-red-900 hover:text-red-500 transition-colors underline">Clear Leaderboard</button>
-    </footer>
+        </section>
+    </main>
 
     <!-- Details Modal -->
-    <div id="lapDetailsModal" class="modal-overlay" onclick="closeModal(event)">
-        <div class="arabian-card modal-content w-full max-w-md p-6 mx-4 shadow-2xl" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-start mb-4 border-b border-yellow-800 pb-2">
-                <h3 class="text-2xl text-yellow-400 decorative-font" id="modalTeamName">Team Name</h3>
-                <button onclick="closeModal()" class="text-orange-300 hover:text-white text-2xl leading-none">&times;</button>
-            </div>
+    <div id="detailsModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="modal-content bg-slate-900 border border-yellow-600 p-8 rounded-xl max-w-md w-full shadow-2xl relative bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times fa-lg"></i>
+            </button>
             
-            <div class="mb-4 flex justify-between text-sm text-slate-400">
-                <span>Total Time: <span id="modalTotalTime" class="text-white font-mono"></span></span>
-                <span>Best Lap: <span id="modalBestLap" class="text-emerald-400 font-mono"></span></span>
+            <h2 id="modalTeamName" class="text-3xl text-gold-gradient cinzel font-bold mb-1 text-center">Team Name</h2>
+            <p id="modalRank" class="text-center text-gray-400 text-sm mb-6 uppercase tracking-widest">Rank #1</p>
+
+            <div class="space-y-4">
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-yellow-200">Object Type</span>
+                    <span id="modalObject" class="font-bold text-white">Sphere</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-yellow-200">Base Points</span>
+                    <span id="modalBasePts" class="font-mono text-yellow-400">150</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-yellow-200">Run Time</span>
+                    <span id="modalRunTime" class="font-mono text-white">45.20s</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2">
+                    <span class="text-red-300">Penalties Added</span>
+                    <span id="modalPenalties" class="font-mono text-red-400">+5s</span>
+                </div>
+                <div class="flex justify-between border-b border-white/10 pb-2 bg-white/5 p-2 rounded">
+                    <span class="text-yellow-200 font-bold">Total Calc Time</span>
+                    <span id="modalTotalTime" class="font-mono text-white font-bold">50.20s</span>
+                </div>
+                
+                <div class="bg-gradient-to-r from-yellow-900/40 to-yellow-800/40 p-4 rounded-lg border border-yellow-600/30 text-center mt-4">
+                    <div class="text-xs uppercase text-yellow-200 tracking-widest mb-1">Final Score</div>
+                    <div id="modalFinalScore" class="text-5xl font-mono text-yellow-400 drop-shadow-md">2.98</div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-white/10">
+                    <h4 class="text-xs text-gray-400 uppercase mb-2">Penalty Details:</h4>
+                    <ul id="modalPenaltyLog" class="text-xs text-red-300 list-disc pl-4 space-y-1">
+                        <!-- Log items -->
+                    </ul>
+                </div>
             </div>
 
-            <div class="bg-slate-900/50 rounded border border-yellow-900/50 max-h-64 overflow-y-auto">
-                <table class="w-full text-sm">
-                    <thead class="bg-yellow-900/20 text-orange-300">
-                        <tr>
-                            <th class="p-2 text-left">Lap #</th>
-                            <th class="p-2 text-right">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modalLapBody">
-                        <!-- Lap Details Here -->
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="mt-4 text-center">
-                <button onclick="closeModal()" class="btn-gold px-6 py-2 rounded text-sm">Close Scroll</button>
-            </div>
+            <button id="deleteTeamBtn" class="mt-6 w-full border border-red-900 text-red-500 hover:bg-red-900/20 py-2 rounded text-sm transition">
+                Disqualify / Delete Entry
+            </button>
         </div>
     </div>
 
-    <!-- Logic -->
     <script>
         // --- State Management ---
-        let timerInterval = null;
-        let startTime = 0;
-        let elapsedTime = 0;
+        let teams = JSON.parse(localStorage.getItem('roboTeams')) || [];
+        let timerInterval;
+        let startTime;
+        let elapsed = 0;
         let isRunning = false;
-        let currentLaps = [];
-        let leaderboardData = [];
-        const MAX_TIME_MS = 10 * 60 * 1000; // 10 minutes in ms
+        
+        // Current Run Data
+        let currentPenaltyTime = 0;
+        let penaltyLog = [];
 
-        // --- DOM Elements ---
-        const els = {
-            teamInput: document.getElementById('teamNameInput'),
-            timerDisplay: document.getElementById('mainTimer'),
-            startBtn: document.getElementById('startBtn'),
-            lapBtn: document.getElementById('lapBtn'),
-            stopBtn: document.getElementById('stopBtn'),
-            resetBtn: document.getElementById('resetBtn'),
-            statusMsg: document.getElementById('statusMsg'),
-            lapsContainer: document.getElementById('currentLapsContainer'),
-            leaderboardBody: document.getElementById('leaderboardBody'),
-            modal: document.getElementById('lapDetailsModal'),
-            modalTeamName: document.getElementById('modalTeamName'),
-            modalTotalTime: document.getElementById('modalTotalTime'),
-            modalBestLap: document.getElementById('modalBestLap'),
-            modalLapBody: document.getElementById('modalLapBody')
-        };
-
-        // --- Persistence ---
-        function loadData() {
-            const saved = localStorage.getItem('desertRoboticsLeaderboard');
-            if (saved) {
-                try {
-                    leaderboardData = JSON.parse(saved);
-                    sortLeaderboard(); // Ensure sorted just in case
-                    renderLeaderboard();
-                } catch (e) {
-                    console.error("Failed to load leaderboard data", e);
-                }
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem('desertRoboticsLeaderboard', JSON.stringify(leaderboardData));
-        }
-
-        function clearData() {
-            if(confirm("Are you sure you want to erase all leaderboard history? This cannot be undone.")) {
-                localStorage.removeItem('desertRoboticsLeaderboard');
-                leaderboardData = [];
-                renderLeaderboard();
-            }
-        }
-
-        // Initialize
-        loadData();
-
-        // --- Formatting ---
-        function formatTime(ms) {
-            const minutes = Math.floor(ms / 60000);
-            const seconds = Math.floor((ms % 60000) / 1000);
-            const centiseconds = Math.floor((ms % 1000) / 10);
-
-            return `${pad(minutes)}:${pad(seconds)}:${pad(centiseconds)}`;
-        }
-
-        function pad(num) {
-            return num.toString().padStart(2, '0');
-        }
-
-        // --- CSV Export Logic ---
-        function exportToCSV() {
-            if (leaderboardData.length === 0) {
-                alert("The leaderboard is empty. No data to export!");
-                return;
-            }
-
-            // Define Headers
-            const headers = ["Rank", "Team Name", "Laps Completed", "Best Lap Time", "Total Time"];
-            
-            // Map Data to CSV Rows
-            const rows = leaderboardData.map((team, index) => {
-                return [
-                    index + 1,
-                    `"${team.name.replace(/"/g, '""')}"`, // Escape quotes in names
-                    team.laps.length,
-                    formatTime(team.bestLap),
-                    formatTime(team.totalTime)
-                ];
-            });
-
-            // Combine into CSV String
-            const csvContent = [
-                headers.join(","),
-                ...rows.map(row => row.join(","))
-            ].join("\n");
-
-            // Create Download Link
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `desert_robotics_leaderboard_${new Date().toISOString().slice(0,10)}.csv`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // --- Timer Logic ---
+        // --- Timer Functions ---
         function startTimer() {
-            const teamName = els.teamInput.value.trim();
-            if (!teamName) {
-                showStatus("Please enter a team name first!", "text-red-400");
-                els.teamInput.focus();
+            if (isRunning) return;
+            
+            isRunning = true;
+            startTime = Date.now() - elapsed;
+            timerInterval = setInterval(updateTimerUI, 10); // Update every 10ms
+            
+            document.getElementById('startBtn').classList.add('hidden');
+            document.getElementById('stopBtn').classList.remove('hidden');
+            document.getElementById('stopBtn').disabled = false;
+        }
+
+        function stopTimer() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            clearInterval(timerInterval);
+            
+            document.getElementById('startBtn').classList.remove('hidden');
+            document.getElementById('stopBtn').classList.add('hidden');
+        }
+
+        function resetRun() {
+            stopTimer();
+            elapsed = 0;
+            currentPenaltyTime = 0;
+            penaltyLog = [];
+            
+            document.getElementById('timerDisplay').textContent = "00:00.00";
+            document.getElementById('teamName').value = "";
+            document.getElementById('penaltyLogList').innerHTML = "";
+            updateStatsUI();
+        }
+
+        function updateTimerUI() {
+            const now = Date.now();
+            elapsed = now - startTime;
+            
+            // Format time
+            const totalSeconds = elapsed / 1000;
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = Math.floor(totalSeconds % 60);
+            const ms = Math.floor((elapsed % 1000) / 10);
+
+            const formatted = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
+            
+            document.getElementById('timerDisplay').textContent = formatted;
+            updateStatsUI();
+            
+            // Check Hard Limit (5 mins = 300000ms)
+            if (elapsed >= 300000) {
+                stopTimer();
+                alert("HARD TIME LIMIT REACHED (5 MINS). Run Ends. Score is 0.");
+            }
+        }
+
+        // --- Penalty Logic ---
+        function addPenalty(seconds, reason) {
+            currentPenaltyTime += seconds;
+            penaltyLog.push(`${reason} (+${seconds}s)`);
+            
+            // Add visual log
+            const logEl = document.getElementById('penaltyLogList');
+            logEl.innerHTML = penaltyLog.map(p => `<span>${p}</span>`).join(', ');
+            
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            // Time in seconds
+            const actualTimeSec = elapsed / 1000;
+            const totalTime = actualTimeSec + currentPenaltyTime;
+            
+            document.getElementById('penaltyDisplay').textContent = `+${currentPenaltyTime}s`;
+            document.getElementById('totalTimeDisplay').textContent = `${totalTime.toFixed(2)}s`;
+        }
+
+        // --- Scoring & Submission ---
+        function finishAndSave() {
+            stopTimer();
+            
+            const name = document.getElementById('teamName').value.trim();
+            if (!name) {
+                alert("Please enter a Team Name.");
                 return;
             }
 
-            // Reset current run state
-            isRunning = true;
-            currentLaps = [];
-            elapsedTime = 0;
-            startTime = Date.now();
+            const select = document.getElementById('objectSelect');
+            const basePoints = parseInt(select.value);
+            const objectName = select.options[select.selectedIndex].getAttribute('data-name');
             
-            // UI Updates
-            els.teamInput.disabled = true;
-            els.startBtn.classList.add('hidden');
-            els.resetBtn.classList.add('hidden');
+            const actualTimeSec = elapsed / 1000;
+            const totalTime = actualTimeSec + currentPenaltyTime; // Formula Denominator
+
+            let finalScore = 0;
+
+            // Logic: 
+            // 1. Hard Time Limit: If Total Time > 300 (5 mins), Score = 0 (or if actual run exceeded it)
+            // 2. Improper Finish: Prompt implies timer keeps running, which we handle by just stopping timer late.
+            // 3. Score Formula = Base / TotalTime
             
-            enableBtn(els.lapBtn);
-            enableBtn(els.stopBtn);
-            
-            renderCurrentLaps(); // Clear previous laps
-            showStatus("Run in progress...", "text-green-400");
+            if (totalTime >= 300 || elapsed >= 300000) {
+                finalScore = 0;
+            } else if (totalTime > 0) {
+                finalScore = basePoints / totalTime;
+            } else {
+                finalScore = 0;
+            }
 
-            // Start Loop
-            timerInterval = setInterval(() => {
-                const now = Date.now();
-                elapsedTime = now - startTime;
-
-                // Check for 10 minute limit
-                if (elapsedTime >= MAX_TIME_MS) {
-                    elapsedTime = MAX_TIME_MS;
-                    stopTimer(true); // true = auto stopped
-                }
-
-                els.timerDisplay.textContent = formatTime(elapsedTime);
-            }, 10); // Update every 10ms
-        }
-
-        function recordLap() {
-            if (!isRunning) return;
-            
-            const prevLapTotal = currentLaps.length > 0 
-                ? currentLaps.reduce((a, b) => a + b, 0) 
-                : 0;
-            
-            const lapDuration = elapsedTime - prevLapTotal;
-            
-            currentLaps.push(lapDuration);
-            renderCurrentLaps();
-            
-            // Visual feedback on timer
-            els.timerDisplay.style.color = '#4ade80'; // Green flash
-            setTimeout(() => els.timerDisplay.style.color = '', 200);
-        }
-
-        function stopTimer(autoStop = false) {
-            if (!isRunning) return;
-
-            clearInterval(timerInterval);
-            isRunning = false;
-
-            // Disable controls
-            disableBtn(els.lapBtn);
-            disableBtn(els.stopBtn);
-            els.resetBtn.classList.remove('hidden');
-
-            // Final Logic
-            const teamName = els.teamInput.value.trim();
-            
-            const runData = {
+            const newEntry = {
                 id: Date.now(),
-                name: teamName,
-                totalTime: elapsedTime,
-                laps: [...currentLaps], // Copy array
-                // Calculate best lap (if no laps recorded, total time is the lap)
-                bestLap: currentLaps.length > 0 ? Math.min(...currentLaps) : elapsedTime
+                name: name,
+                object: objectName,
+                basePoints: basePoints,
+                rawTime: actualTimeSec,
+                penaltyTime: currentPenaltyTime,
+                totalTime: totalTime,
+                score: parseFloat(finalScore.toFixed(4)),
+                logs: [...penaltyLog]
             };
 
-            addToLeaderboard(runData);
+            teams.push(newEntry);
+            saveAndRender();
+            resetRun();
+        }
+
+        // --- Leaderboard & Data ---
+        function saveAndRender() {
+            // Sort: Higher score is better
+            teams.sort((a, b) => b.score - a.score);
+            localStorage.setItem('roboTeams', JSON.stringify(teams));
             
-            if (autoStop) {
-                showStatus("Time Limit Reached (10m)!", "text-red-400");
-            } else {
-                showStatus("Run Completed.", "text-yellow-400");
-            }
-        }
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = "";
 
-        function resetUI() {
-            els.teamInput.value = "";
-            els.teamInput.disabled = false;
-            els.timerDisplay.textContent = "00:00:00";
-            els.statusMsg.textContent = "";
-            
-            els.startBtn.classList.remove('hidden');
-            els.resetBtn.classList.add('hidden');
-            
-            currentLaps = [];
-            renderCurrentLaps();
-        }
-
-        // --- Leaderboard Logic ---
-        function addToLeaderboard(run) {
-            leaderboardData.push(run);
-            sortLeaderboard();
-            saveData(); // Save to LocalStorage
-            renderLeaderboard();
-        }
-
-        function sortLeaderboard() {
-            leaderboardData.sort((a, b) => {
-                // Primary: Least Total Time
-                if (a.totalTime !== b.totalTime) {
-                    return a.totalTime - b.totalTime;
-                }
-                // Secondary: Least Best Lap (Tie Breaker)
-                return a.bestLap - b.bestLap;
-            });
-        }
-
-        function renderLeaderboard() {
-            els.leaderboardBody.innerHTML = '';
-
-            if (leaderboardData.length === 0) {
-                els.leaderboardBody.innerHTML = `<tr><td colspan="5" class="text-center p-10 text-slate-500 italic">The sands are empty. Start the first run.</td></tr>`;
+            if(teams.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-500 mt-10 italic">The arena is empty...</p>';
                 return;
             }
 
-            leaderboardData.forEach((team, index) => {
+            teams.forEach((team, index) => {
                 const rank = index + 1;
-                let rankClass = "text-slate-300";
-                let rowBg = "hover:bg-white/5";
-                let icon = "";
-
-                // Styling top 3
-                if (rank === 1) {
-                    rankClass = "text-yellow-400 font-bold text-xl";
-                    rowBg = "bg-yellow-900/20 hover:bg-yellow-900/30";
-                    icon = "👑 ";
-                } else if (rank === 2) {
-                    rankClass = "text-slate-300 font-bold text-lg";
-                    icon = "🥈 ";
-                } else if (rank === 3) {
-                    rankClass = "text-orange-400 font-bold text-lg";
-                    icon = "🥉 ";
-                }
-
-                const row = document.createElement('tr');
-                row.className = `border-b border-yellow-900/30 transition-colors ${rowBg}`;
+                let rankColor = "text-gray-400";
+                let borderColor = "border-gray-700";
                 
-                // Note the onclick handler on the Best Lap cell
-                row.innerHTML = `
-                    <td class="p-3 text-center ${rankClass}">${icon}#${rank}</td>
-                    <td class="p-3 font-medium text-white">${team.name}</td>
-                    <td class="p-3 text-right text-slate-400">${team.laps.length}</td>
-                    <td class="p-3 text-right text-emerald-400 font-mono text-sm clickable-cell" 
-                        onclick="showTeamDetails(${index})" title="Click to see all laps">
-                        ${formatTime(team.bestLap)}
-                    </td>
-                    <td class="p-3 text-right text-yellow-400 font-mono font-bold">${formatTime(team.totalTime)}</td>
-                `;
-                els.leaderboardBody.appendChild(row);
-            });
-        }
+                if(rank === 1) { rankColor = "text-yellow-400"; borderColor = "border-yellow-500"; }
+                if(rank === 2) { rankColor = "text-gray-300"; borderColor = "border-gray-400"; }
+                if(rank === 3) { rankColor = "text-amber-700"; borderColor = "border-amber-700"; }
 
-        function renderCurrentLaps() {
-            els.lapsContainer.innerHTML = '';
-            
-            if (currentLaps.length === 0) {
-                els.lapsContainer.innerHTML = `<p class="text-slate-500 text-center italic mt-4 text-sm opacity-50">No laps recorded yet.</p>`;
-                return;
-            }
-
-            // Reverse loop to show newest lap at top
-            [...currentLaps].reverse().forEach((lapTime, index) => {
-                const actualIndex = currentLaps.length - 1 - index;
                 const div = document.createElement('div');
-                div.className = "flex justify-between items-center p-2 border-b border-yellow-900/30 text-sm animate-[fadeIn_0.3s_ease-out]";
+                div.className = `leaderboard-item bg-slate-900/80 p-4 rounded border-b ${borderColor} flex justify-between items-center`;
+                div.onclick = () => showDetails(team, rank);
+                
                 div.innerHTML = `
-                    <span class="text-orange-300">Lap ${actualIndex + 1}</span>
-                    <span class="font-mono text-white">${formatTime(lapTime)}</span>
+                    <div class="flex items-center gap-4">
+                        <div class="cinzel text-2xl font-bold w-8 text-center ${rankColor}">#${rank}</div>
+                        <div>
+                            <div class="font-bold text-yellow-100 text-lg">${team.name}</div>
+                            <div class="text-xs text-gray-400">${team.object}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-mono font-bold text-gold-gradient">${team.score.toFixed(3)}</div>
+                        <div class="text-xs text-gray-500">Score</div>
+                    </div>
                 `;
-                els.lapsContainer.appendChild(div);
+                list.appendChild(div);
             });
         }
 
-        // --- Modal Logic ---
-        function showTeamDetails(index) {
-            const team = leaderboardData[index];
-            if (!team) return;
+        function clearAllData() {
+            if(confirm("Are you sure you want to reset the entire tournament?")) {
+                teams = [];
+                saveAndRender();
+            }
+        }
 
-            els.modalTeamName.textContent = team.name;
-            els.modalTotalTime.textContent = formatTime(team.totalTime);
-            els.modalBestLap.textContent = formatTime(team.bestLap);
-            els.modalLapBody.innerHTML = '';
-
-            if (team.laps.length === 0) {
-                els.modalLapBody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-slate-500 italic">No individual laps marked.</td></tr>';
+        // --- Modal ---
+        function showDetails(team, rank) {
+            const modal = document.getElementById('detailsModal');
+            
+            document.getElementById('modalTeamName').textContent = team.name;
+            document.getElementById('modalRank').textContent = `Rank #${rank}`;
+            document.getElementById('modalObject').textContent = team.object;
+            document.getElementById('modalBasePts').textContent = team.basePoints;
+            document.getElementById('modalRunTime').textContent = team.rawTime.toFixed(2) + "s";
+            document.getElementById('modalPenalties').textContent = "+" + team.penaltyTime + "s";
+            document.getElementById('modalTotalTime').textContent = team.totalTime.toFixed(2) + "s";
+            document.getElementById('modalFinalScore').textContent = team.score.toFixed(4);
+            
+            const logList = document.getElementById('modalPenaltyLog');
+            logList.innerHTML = "";
+            if (team.logs.length === 0) {
+                logList.innerHTML = "<li>No penalties recorded.</li>";
             } else {
-                team.laps.forEach((lapTime, i) => {
-                    // Highlight the best lap
-                    const isBest = lapTime === team.bestLap;
-                    const bgClass = isBest ? 'bg-emerald-900/30 text-emerald-300 font-bold' : 'text-slate-300 border-b border-yellow-900/10';
-                    
-                    const row = document.createElement('tr');
-                    row.className = bgClass;
-                    row.innerHTML = `
-                        <td class="p-2 pl-3">Lap ${i + 1} ${isBest ? '★' : ''}</td>
-                        <td class="p-2 pr-3 text-right font-mono">${formatTime(lapTime)}</td>
-                    `;
-                    els.modalLapBody.appendChild(row);
+                team.logs.forEach(log => {
+                    const li = document.createElement('li');
+                    li.textContent = log;
+                    logList.appendChild(li);
                 });
             }
 
-            els.modal.classList.add('active');
+            // Setup Delete Button
+            const delBtn = document.getElementById('deleteTeamBtn');
+            delBtn.onclick = () => {
+                if(confirm(`Delete record for ${team.name}?`)) {
+                    teams = teams.filter(t => t.id !== team.id);
+                    saveAndRender();
+                    closeModal();
+                }
+            };
+
+            modal.classList.remove('hidden');
         }
 
-        function closeModal(event) {
-            // If event exists (clicked overlay) and target is not the overlay itself, ignore
-            if (event && event.target !== els.modal && !event.target.closest('.btn-gold')) return;
-            
-            els.modal.classList.remove('active');
+        function closeModal() {
+            document.getElementById('detailsModal').classList.add('hidden');
         }
 
-        // --- Utilities ---
-        function showStatus(msg, colorClass) {
-            els.statusMsg.textContent = msg;
-            els.statusMsg.className = `h-6 mt-2 text-sm font-bold tracking-wide uppercase animate-pulse ${colorClass}`;
-        }
-
-        function enableBtn(btn) {
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-        }
-
-        function disableBtn(btn) {
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-        }
-
-        // Add simple key listener for Spacebar to split lap
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && isRunning) {
-                e.preventDefault(); // prevent scroll
-                recordLap();
-            }
+        // Close modal on outside click
+        document.getElementById('detailsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('detailsModal')) closeModal();
         });
+
+        // Initial Render
+        saveAndRender();
 
     </script>
 </body>
